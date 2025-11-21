@@ -1,0 +1,8 @@
+node_modules/
+dist/
+config.json
+*.log
+.env
+logs/
+usage-history.json
+.pm2/

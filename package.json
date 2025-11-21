@@ -1,0 +1,36 @@
+{
+  "name": "claude-usage-monitor",
+  "version": "1.0.0",
+  "description": "Monitor Claude Code usage and send email notifications",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "echo \"No tests yet\" && exit 0",
+    "status": "ts-node src/status.ts",
+    "simulate": "ts-node src/simulate.ts",
+    "service:start": "npm run build && pm2 start ecosystem.config.js",
+    "service:stop": "pm2 stop claude-monitor",
+    "service:restart": "pm2 restart claude-monitor",
+    "service:delete": "pm2 delete claude-monitor",
+    "service:status": "pm2 status claude-monitor",
+    "service:logs": "pm2 logs claude-monitor",
+    "service:clean": "pm2 delete claude-monitor || true"
+  },
+  "keywords": ["claude", "monitoring", "usage", "notification"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.14",
+    "pm2": "^5.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

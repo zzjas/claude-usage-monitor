@@ -1,0 +1,27 @@
+{
+  "email": {
+    "from": "your-email@gmail.com",
+    "to": "your-email@gmail.com",
+    "smtp": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "your-email@gmail.com",
+        "pass": "your-app-password-here"
+      }
+    }
+  },
+  "schedule": {
+    "checkInterval": "0 * * * *"
+  },
+  "notifications": {
+    "weeklyUsageThreshold": 10,
+    "sessionDropThreshold": 70,
+    "weeklyMilestones": [25, 50, 70, 80, 90, 95, 99],
+    "sessionMilestones": [70, 80, 90, 95]
+  },
+  "storage": {
+    "dataFile": "usage-history.json"
+  }
+}
