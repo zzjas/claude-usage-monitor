@@ -4,6 +4,10 @@ Monitors your Claude Code usage and sends email notifications.
 
 ## Quick Setup
 
+0. **Allow Claude Code to access this directory**
+
+You need to manually run `claude` once in this directory to give it permission for accessing this directory.
+
 1. **Configure email:**
 ```bash
 cp config.example.json config.json
