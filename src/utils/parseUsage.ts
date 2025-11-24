@@ -14,11 +14,24 @@ function stripAnsiCodes(text: string): string {
 }
 
 /**
- * Extracts percentage from a line containing "X% used"
+ * Extracts percentage from a line containing "X% used" or "X% left"
+ * Always returns the percentage as "used" (converts "left" to "used")
  */
 function extractPercentage(line: string): number | null {
-  const match = line.match(/(\d+)%\s+used/);
-  return match ? parseInt(match[1], 10) : null;
+  // Try matching "X% used" format
+  const usedMatch = line.match(/(\d+)%\s+used/);
+  if (usedMatch) {
+    return parseInt(usedMatch[1], 10);
+  }
+
+  // Try matching "X% left" format and convert to "used"
+  const leftMatch = line.match(/(\d+)%\s+left/);
+  if (leftMatch) {
+    const leftPercentage = parseInt(leftMatch[1], 10);
+    return 100 - leftPercentage; // Convert "left" to "used"
+  }
+
+  return null;
 }
 
 /**
