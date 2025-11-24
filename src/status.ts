@@ -78,11 +78,11 @@ async function showStatus() {
 
     const sessionBar = createProgressBar(usage.currentSession);
     const weeklyBar = createProgressBar(usage.weeklyAllModels);
-    const opusBar = createProgressBar(usage.weeklyOpus);
+    const sonnetBar = createProgressBar(usage.weeklySonnet);
 
     console.log(`   Current Session:      ${sessionBar} ${usage.currentSession}%`);
     console.log(`   Weekly (All Models):  ${weeklyBar} ${usage.weeklyAllModels}%`);
-    console.log(`   Weekly (Opus):        ${opusBar} ${usage.weeklyOpus}%`);
+    console.log(`   Weekly (Sonnet):      ${sonnetBar} ${usage.weeklySonnet}%`);
   } catch (error: any) {
     console.log(`   \x1b[31mFailed to fetch usage: ${error.message}\x1b[0m`);
   }

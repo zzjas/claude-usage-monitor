@@ -1,7 +1,7 @@
 export interface UsageData {
   currentSession: number;
   weeklyAllModels: number;
-  weeklyOpus: number;
+  weeklySonnet: number;
   timestamp: number;
 }
 
@@ -36,6 +36,7 @@ export interface Config {
 export interface UsageHistory {
   lastWeeklyUsage: number;
   lastSessionUsage: number;
+  lastSonnetUsage?: number;
   lastNotificationTimestamp: number;
   history: UsageData[];
 }

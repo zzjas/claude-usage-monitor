@@ -24,7 +24,7 @@ async function monitoringTask(config: Config, isStartup = false): Promise<void> 
     console.log('Current usage:', {
       session: `${currentUsage.currentSession}%`,
       weekly: `${currentUsage.weeklyAllModels}%`,
-      opus: `${currentUsage.weeklyOpus}%`,
+      sonnet: `${currentUsage.weeklySonnet}%`,
     });
 
     // Load history
@@ -35,7 +35,7 @@ async function monitoringTask(config: Config, isStartup = false): Promise<void> 
       const emailBody = formatUsageEmail(
         currentUsage.currentSession,
         currentUsage.weeklyAllModels,
-        currentUsage.weeklyOpus,
+        currentUsage.weeklySonnet,
         'Monitor started - Current usage report'
       );
       await sendEmail(config, 'Claude Usage Monitor Started', emailBody);

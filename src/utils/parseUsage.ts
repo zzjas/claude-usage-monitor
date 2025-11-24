@@ -43,7 +43,7 @@ export function parseUsage(rawOutput: string): UsageData {
 
   let currentSession = 0;
   let weeklyAllModels = 0;
-  let weeklyOpus = 0;
+  let weeklySonnet = 0;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -63,11 +63,12 @@ export function parseUsage(rawOutput: string): UsageData {
           weeklyAllModels = percentage;
         }
       }
-    } else if (line.includes('Current week (Opus)')) {
+    } else if (line.includes('Current week (Sonnet')) {
+      // Matches both "Current week (Sonnet only)" and "Current week (Sonnet)"
       if (i + 1 < lines.length) {
         const percentage = extractPercentage(lines[i + 1]);
         if (percentage !== null) {
-          weeklyOpus = percentage;
+          weeklySonnet = percentage;
         }
       }
     }
@@ -76,7 +77,7 @@ export function parseUsage(rawOutput: string): UsageData {
   return {
     currentSession,
     weeklyAllModels,
-    weeklyOpus,
+    weeklySonnet,
     timestamp: Date.now(),
   };
 }

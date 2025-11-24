@@ -19,7 +19,7 @@ async function simulate() {
     const scenario1Current: UsageData = {
       currentSession: 15,
       weeklyAllModels: 35,
-      weeklyOpus: 0,
+      weeklySonnet: 0,
       timestamp: Date.now(),
     };
 
@@ -35,7 +35,7 @@ async function simulate() {
       const emailBody = formatUsageEmail(
         scenario1Current.currentSession,
         scenario1Current.weeklyAllModels,
-        scenario1Current.weeklyOpus,
+        scenario1Current.weeklySonnet,
         check1.reason
       );
 
@@ -57,7 +57,7 @@ async function simulate() {
     const scenario2Current: UsageData = {
       currentSession: 0,
       weeklyAllModels: 45,
-      weeklyOpus: 0,
+      weeklySonnet: 0,
       timestamp: Date.now(),
     };
 
@@ -73,7 +73,7 @@ async function simulate() {
       const emailBody = formatUsageEmail(
         scenario2Current.currentSession,
         scenario2Current.weeklyAllModels,
-        scenario2Current.weeklyOpus,
+        scenario2Current.weeklySonnet,
         check2.reason
       );
 
@@ -95,7 +95,7 @@ async function simulate() {
     const scenario3Current: UsageData = {
       currentSession: 50,
       weeklyAllModels: 91,
-      weeklyOpus: 5,
+      weeklySonnet: 5,
       timestamp: Date.now(),
     };
 
@@ -111,7 +111,7 @@ async function simulate() {
       const emailBody = formatUsageEmail(
         scenario3Current.currentSession,
         scenario3Current.weeklyAllModels,
-        scenario3Current.weeklyOpus,
+        scenario3Current.weeklySonnet,
         check3.reason
       );
 
@@ -133,7 +133,7 @@ async function simulate() {
     const scenario4Current: UsageData = {
       currentSession: 82,
       weeklyAllModels: 55,
-      weeklyOpus: 0,
+      weeklySonnet: 0,
       timestamp: Date.now(),
     };
 
@@ -149,7 +149,7 @@ async function simulate() {
       const emailBody = formatUsageEmail(
         scenario4Current.currentSession,
         scenario4Current.weeklyAllModels,
-        scenario4Current.weeklyOpus,
+        scenario4Current.weeklySonnet,
         check4.reason
       );
 

@@ -50,6 +50,7 @@ export function updateHistory(
   const updated: UsageHistory = {
     lastWeeklyUsage: newUsage.weeklyAllModels,
     lastSessionUsage: newUsage.currentSession,
+    lastSonnetUsage: newUsage.weeklySonnet,
     lastNotificationTimestamp: history.lastNotificationTimestamp,
     history: [...history.history, newUsage],
   };

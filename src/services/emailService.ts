@@ -41,7 +41,7 @@ export async function sendEmail(
 export function formatUsageEmail(
   currentSession: number,
   weeklyAllModels: number,
-  weeklyOpus: number,
+  weeklySonnet: number,
   reason: string
 ): string {
   return `
@@ -54,7 +54,7 @@ Current Usage:
 --------------
 • Current Session: ${currentSession}%
 • Weekly (All Models): ${weeklyAllModels}%
-• Weekly (Opus): ${weeklyOpus}%
+• Weekly (Sonnet): ${weeklySonnet}%
 
 Timestamp: ${new Date().toLocaleString()}
 

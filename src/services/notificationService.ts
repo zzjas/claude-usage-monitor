@@ -66,6 +66,19 @@ export function shouldSendNotification(
     }
   }
 
+  // Check 5: Sonnet usage milestones (uses sessionMilestones)
+  for (const milestone of sessionMilestones) {
+    if (
+      currentUsage.weeklySonnet >= milestone &&
+      (history.lastSonnetUsage ?? 0) < milestone
+    ) {
+      const warning = milestone >= 80 ? ' (Warning: approaching limit)' : '';
+      reasons.push(
+        `Sonnet usage reached ${milestone}%${warning}`
+      );
+    }
+  }
+
   if (reasons.length > 0) {
     return {
       shouldNotify: true,
@@ -90,7 +103,7 @@ export async function processUsageAndNotify(
     const emailBody = formatUsageEmail(
       currentUsage.currentSession,
       currentUsage.weeklyAllModels,
-      currentUsage.weeklyOpus,
+      currentUsage.weeklySonnet,
       check.reason
     );
 
