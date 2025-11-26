@@ -1,5 +1,7 @@
 import { Config, UsageData, UsageHistory } from '../types';
 import { sendEmail, formatUsageEmail } from './emailService';
+import { writeToFile, formatFileNotification } from './fileNotificationService';
+import { getNotificationMethods } from '../utils/config';
 
 interface NotificationCheck {
   shouldNotify: boolean;
@@ -100,17 +102,31 @@ export async function processUsageAndNotify(
   const check = shouldSendNotification(currentUsage, history, config);
 
   if (check.shouldNotify && check.reason) {
-    const emailBody = formatUsageEmail(
-      currentUsage.currentSession,
-      currentUsage.weeklyAllModels,
-      currentUsage.weeklySonnet,
-      check.reason
-    );
+    const methods = getNotificationMethods(config);
+    const subject = '🚨 Claude Code Usage Alert';
 
-    await sendEmail(
-      config,
-      'Claude Code Usage Alert',
-      emailBody
-    );
+    // Send email notification
+    if (methods.includes('email')) {
+      const emailBody = formatUsageEmail(
+        currentUsage.currentSession,
+        currentUsage.weeklyAllModels,
+        currentUsage.weeklySonnet,
+        check.reason
+      );
+
+      await sendEmail(config, subject, emailBody);
+    }
+
+    // Write file notification
+    if (methods.includes('file')) {
+      const fileBody = formatFileNotification(
+        currentUsage.currentSession,
+        currentUsage.weeklyAllModels,
+        currentUsage.weeklySonnet,
+        check.reason
+      );
+
+      await writeToFile(config, subject, fileBody);
+    }
   }
 }

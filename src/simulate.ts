@@ -1,16 +1,46 @@
 #!/usr/bin/env node
 
-import { loadConfig } from './utils/config';
+import { loadConfig, getNotificationMethods } from './utils/config';
 import { sendEmail, formatUsageEmail } from './services/emailService';
+import { writeToFile, formatFileNotification } from './services/fileNotificationService';
 import { UsageData, UsageHistory } from './types';
 import { shouldSendNotification } from './services/notificationService';
 
+async function sendNotification(
+  config: ReturnType<typeof loadConfig>,
+  subject: string,
+  currentSession: number,
+  weeklyAllModels: number,
+  weeklySonnet: number,
+  reason: string
+) {
+  const methods = getNotificationMethods(config);
+
+  if (methods.includes('email')) {
+    const emailBody = formatUsageEmail(currentSession, weeklyAllModels, weeklySonnet, reason);
+    await sendEmail(config, subject, emailBody);
+  }
+
+  if (methods.includes('file')) {
+    const fileBody = formatFileNotification(currentSession, weeklyAllModels, weeklySonnet, reason);
+    await writeToFile(config, subject, fileBody);
+  }
+}
+
 async function simulate() {
-  console.log('\n=== Claude Usage Monitor - Email Simulation ===\n');
+  console.log('\n=== Claude Usage Monitor - Notification Simulation ===\n');
 
   try {
     const config = loadConfig();
-    console.log(`Loaded configuration for: ${config.email.to}\n`);
+    const methods = getNotificationMethods(config);
+    console.log(`Notification methods: ${methods.join(', ')}`);
+    if (methods.includes('email') && config.email) {
+      console.log(`Email recipient: ${config.email.to}`);
+    }
+    if (methods.includes('file') && config.file) {
+      console.log(`Notification file: ${config.file.path}`);
+    }
+    console.log();
 
     // Scenario 1: Weekly usage increased by threshold
     console.log('📧 Scenario 1: Weekly usage increased by 10%');
@@ -32,19 +62,15 @@ async function simulate() {
 
     const check1 = shouldSendNotification(scenario1Current, scenario1History, config);
     if (check1.shouldNotify && check1.reason) {
-      const emailBody = formatUsageEmail(
+      await sendNotification(
+        config,
+        '[SIMULATION] 🚨 Claude Code Usage Alert - Weekly Increase',
         scenario1Current.currentSession,
         scenario1Current.weeklyAllModels,
         scenario1Current.weeklySonnet,
         check1.reason
       );
-
-      await sendEmail(
-        config,
-        '[SIMULATION] Claude Code Usage Alert - Weekly Increase',
-        emailBody
-      );
-      console.log('   ✅ Email sent successfully!\n');
+      console.log('   ✅ Notification sent successfully!\n');
     }
 
     // Wait a bit between emails
@@ -70,19 +96,15 @@ async function simulate() {
 
     const check2 = shouldSendNotification(scenario2Current, scenario2History, config);
     if (check2.shouldNotify && check2.reason) {
-      const emailBody = formatUsageEmail(
+      await sendNotification(
+        config,
+        '[SIMULATION] 🚨 Claude Code Usage Alert - Session Reset',
         scenario2Current.currentSession,
         scenario2Current.weeklyAllModels,
         scenario2Current.weeklySonnet,
         check2.reason
       );
-
-      await sendEmail(
-        config,
-        '[SIMULATION] Claude Code Usage Alert - Session Reset',
-        emailBody
-      );
-      console.log('   ✅ Email sent successfully!\n');
+      console.log('   ✅ Notification sent successfully!\n');
     }
 
     // Wait a bit between emails
@@ -108,19 +130,15 @@ async function simulate() {
 
     const check3 = shouldSendNotification(scenario3Current, scenario3History, config);
     if (check3.shouldNotify && check3.reason) {
-      const emailBody = formatUsageEmail(
+      await sendNotification(
+        config,
+        '[SIMULATION] 🚨 Claude Code Usage Alert - Approaching Limit',
         scenario3Current.currentSession,
         scenario3Current.weeklyAllModels,
         scenario3Current.weeklySonnet,
         check3.reason
       );
-
-      await sendEmail(
-        config,
-        '[SIMULATION] Claude Code Usage Alert - Approaching Limit',
-        emailBody
-      );
-      console.log('   ✅ Email sent successfully!\n');
+      console.log('   ✅ Notification sent successfully!\n');
     }
 
     // Wait a bit between emails
@@ -146,24 +164,26 @@ async function simulate() {
 
     const check4 = shouldSendNotification(scenario4Current, scenario4History, config);
     if (check4.shouldNotify && check4.reason) {
-      const emailBody = formatUsageEmail(
+      await sendNotification(
+        config,
+        '[SIMULATION] 🚨 Claude Code Usage Alert - Session Milestone',
         scenario4Current.currentSession,
         scenario4Current.weeklyAllModels,
         scenario4Current.weeklySonnet,
         check4.reason
       );
-
-      await sendEmail(
-        config,
-        '[SIMULATION] Claude Code Usage Alert - Session Milestone',
-        emailBody
-      );
-      console.log('   ✅ Email sent successfully!\n');
+      console.log('   ✅ Notification sent successfully!\n');
     }
 
     console.log('=== Simulation Complete ===');
-    console.log(`\nCheck your inbox at ${config.email.to} for 4 test emails.`);
-    console.log('All emails are prefixed with [SIMULATION] for easy identification.\n');
+    console.log('\n4 test notifications have been sent.');
+    if (methods.includes('email') && config.email) {
+      console.log(`Check your inbox at ${config.email.to} for test emails.`);
+    }
+    if (methods.includes('file') && config.file) {
+      console.log(`Check ${config.file.path} for file notifications.`);
+    }
+    console.log('All notifications are prefixed with [SIMULATION] for easy identification.\n');
 
   } catch (error: any) {
     console.error('❌ Simulation failed:', error.message);

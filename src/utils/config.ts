@@ -1,6 +1,16 @@
 import { readFileSync, existsSync } from 'fs';
-import { Config } from '../types';
+import { Config, NotificationMethod } from '../types';
 import { resolve } from 'path';
+
+/**
+ * Helper to get notification methods as array
+ */
+export function getNotificationMethods(config: Config): NotificationMethod[] {
+  if (Array.isArray(config.notificationMethod)) {
+    return config.notificationMethod;
+  }
+  return [config.notificationMethod];
+}
 
 /**
  * Loads configuration from file
@@ -34,20 +44,36 @@ export function loadConfig(configPath: string = 'config.json'): Config {
 function validateConfig(config: Config): void {
   const errors: string[] = [];
 
-  if (!config.email?.smtp?.auth?.user) {
-    errors.push('email.smtp.auth.user is required');
+  if (!config.notificationMethod) {
+    errors.push('notificationMethod is required (e.g., "email", "file", or ["email", "file"])');
   }
 
-  if (!config.email?.smtp?.auth?.pass) {
-    errors.push('email.smtp.auth.pass is required');
+  const methods = getNotificationMethods(config);
+
+  // Validate email config if email method is enabled
+  if (methods.includes('email')) {
+    if (!config.email?.smtp?.auth?.user) {
+      errors.push('email.smtp.auth.user is required when using email notification');
+    }
+
+    if (!config.email?.smtp?.auth?.pass) {
+      errors.push('email.smtp.auth.pass is required when using email notification');
+    }
+
+    if (!config.email?.from) {
+      errors.push('email.from is required when using email notification');
+    }
+
+    if (!config.email?.to) {
+      errors.push('email.to is required when using email notification');
+    }
   }
 
-  if (!config.email?.from) {
-    errors.push('email.from is required');
-  }
-
-  if (!config.email?.to) {
-    errors.push('email.to is required');
+  // Validate file config if file method is enabled
+  if (methods.includes('file')) {
+    if (!config.file?.path) {
+      errors.push('file.path is required when using file notification');
+    }
   }
 
   if (!config.schedule?.checkInterval) {

@@ -4,6 +4,8 @@ import { getClaudeUsage, pingClaude } from './claudeService';
 import { processUsageAndNotify } from './notificationService';
 import { loadHistory, saveHistory, updateHistory } from '../utils/storage';
 import { sendEmail, formatUsageEmail } from './emailService';
+import { writeToFile, formatFileNotification } from './fileNotificationService';
+import { getNotificationMethods } from '../utils/config';
 
 /**
  * Main monitoring task that runs on schedule
@@ -30,15 +32,31 @@ async function monitoringTask(config: Config, isStartup = false): Promise<void> 
     // Load history
     const history = loadHistory(config.storage.dataFile);
 
-    // On startup, always send an email with current status
+    // On startup, send current status via configured notification method(s)
     if (isStartup) {
-      const emailBody = formatUsageEmail(
-        currentUsage.currentSession,
-        currentUsage.weeklyAllModels,
-        currentUsage.weeklySonnet,
-        'Monitor started - Current usage report'
-      );
-      await sendEmail(config, 'Claude Usage Monitor Started', emailBody);
+      const methods = getNotificationMethods(config);
+      const subject = 'Claude Usage Monitor Started';
+      const reason = 'Monitor started - Current usage report';
+
+      if (methods.includes('email')) {
+        const emailBody = formatUsageEmail(
+          currentUsage.currentSession,
+          currentUsage.weeklyAllModels,
+          currentUsage.weeklySonnet,
+          reason
+        );
+        await sendEmail(config, subject, emailBody);
+      }
+
+      if (methods.includes('file')) {
+        const fileBody = formatFileNotification(
+          currentUsage.currentSession,
+          currentUsage.weeklyAllModels,
+          currentUsage.weeklySonnet,
+          reason
+        );
+        await writeToFile(config, subject, fileBody);
+      }
     } else {
       // Normal operation: check if notification should be sent
       await processUsageAndNotify(currentUsage, history, config);

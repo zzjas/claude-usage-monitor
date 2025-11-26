@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { loadConfig } from './utils/config';
+import { loadConfig, getNotificationMethods } from './utils/config';
 import { startScheduler } from './services/scheduler';
 
 /**
@@ -12,8 +12,15 @@ async function main() {
   try {
     // Load configuration
     const config = loadConfig();
+    const methods = getNotificationMethods(config);
     console.log('Configuration loaded successfully');
-    console.log(`Monitoring email: ${config.email.to}`);
+    console.log(`Notification methods: ${methods.join(', ')}`);
+    if (methods.includes('email') && config.email) {
+      console.log(`Email recipient: ${config.email.to}`);
+    }
+    if (methods.includes('file') && config.file) {
+      console.log(`Notification file: ${config.file.path}`);
+    }
     console.log(`Check interval: ${config.schedule.checkInterval}\n`);
 
     // Start the scheduler

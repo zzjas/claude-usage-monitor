@@ -1,4 +1,5 @@
 {
+  "notificationMethod": "email",
   "email": {
     "from": "your-email@gmail.com",
     "to": "your-email@gmail.com",
@@ -11,6 +12,9 @@
         "pass": "your-app-password-here"
       }
     }
+  },
+  "file": {
+    "path": "notifications.log"
   },
   "schedule": {
     "checkInterval": "0 * * * *"

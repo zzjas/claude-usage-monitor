@@ -5,8 +5,11 @@ export interface UsageData {
   timestamp: number;
 }
 
+export type NotificationMethod = 'email' | 'file';
+
 export interface Config {
-  email: {
+  notificationMethod: NotificationMethod | NotificationMethod[];
+  email?: {
     from: string;
     to: string;
     smtp: {
@@ -18,6 +21,9 @@ export interface Config {
         pass: string;
       };
     };
+  };
+  file?: {
+    path: string;
   };
   schedule: {
     checkInterval: string; // cron format

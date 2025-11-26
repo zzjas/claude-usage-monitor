@@ -1,40 +1,35 @@
-import nodemailer from 'nodemailer';
+import { appendFileSync, existsSync, mkdirSync } from 'fs';
+import { dirname, resolve } from 'path';
 import { Config } from '../types';
 
 /**
- * Sends an email notification
+ * Writes a notification to a file
  */
-export async function sendEmail(
+export async function writeToFile(
   config: Config,
   subject: string,
   body: string
 ): Promise<void> {
-  if (!config.email) {
-    throw new Error('Email configuration not found');
+  if (!config.file?.path) {
+    throw new Error('File path not configured');
   }
 
-  const transporter = nodemailer.createTransport({
-    host: config.email.smtp.host,
-    port: config.email.smtp.port,
-    secure: config.email.smtp.secure,
-    auth: {
-      user: config.email.smtp.auth.user,
-      pass: config.email.smtp.auth.pass,
-    },
-  });
+  const filePath = resolve(process.cwd(), config.file.path);
+  const dir = dirname(filePath);
+
+  // Ensure directory exists
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+
+  const separator = '\n' + '='.repeat(60) + '\n';
+  const entry = `${separator}${subject}\n${new Date().toISOString()}\n${separator}\n${body}\n`;
 
   try {
-    await transporter.sendMail({
-      from: config.email.from,
-      to: config.email.to,
-      subject,
-      text: body,
-      html: body.replace(/\n/g, '<br>'),
-    });
-
-    console.log(`Email sent: ${subject}`);
+    appendFileSync(filePath, entry, 'utf-8');
+    console.log(`Notification written to file: ${filePath}`);
   } catch (error: any) {
-    console.error('Failed to send email:', error.message);
+    console.error('Failed to write notification to file:', error.message);
     throw error;
   }
 }
@@ -59,18 +54,15 @@ function getProgressBar(percentage: number): string {
 }
 
 /**
- * Creates a formatted email body for usage notification
+ * Creates a formatted notification body for file output
  */
-export function formatUsageEmail(
+export function formatFileNotification(
   currentSession: number,
   weeklyAllModels: number,
   weeklySonnet: number,
   reason: string
 ): string {
   return `
-🚨 Claude Code Usage Alert
-══════════════════════════════
-
 📋 What happened:
 ${reason.split('\n').map(line => `   ${line}`).join('\n')}
 
@@ -82,8 +74,5 @@ ${reason.split('\n').map(line => `   ${line}`).join('\n')}
 └─────────────────────────────────────────┘
 
 ⏰ Time: ${new Date().toLocaleString()}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🤖 Automated notification from Claude Usage Monitor
 `.trim();
 }
